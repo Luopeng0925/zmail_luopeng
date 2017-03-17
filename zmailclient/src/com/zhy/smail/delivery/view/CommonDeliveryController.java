@@ -49,9 +49,11 @@ public class CommonDeliveryController extends RootController implements Initiali
     private Button packetButton;
     @FXML
     private Button tomailButton;
+
     private List<BoxInfo> smallBoxes;
     private List<BoxInfo> middleBoxes;
     private List<BoxInfo> largeBoxes;
+
     @FXML
     private Button smallButton;
     @FXML
@@ -62,12 +64,15 @@ public class CommonDeliveryController extends RootController implements Initiali
     private Label lblMessage;
     @FXML
     private Label lblLine1;
+
     private BoxInfo box;
+
 
     public void setApp(MainApp app) {
         this.app = app;
         app.createTimeout(lblTimer);
         listAvailableBox();
+
     }
 
     @FXML
@@ -80,19 +85,22 @@ public class CommonDeliveryController extends RootController implements Initiali
             @Override
             public void doResult(RfResultEvent event) {
                 if (event.getResult() != RfResultEvent.OK) return;
+
                 List<BoxInfo> boxes = (List<BoxInfo>) event.getData();
+
                 CabinetEntry cabinetEntry = new CabinetEntry();
                 for (int i = 0; i < boxes.size(); i++) {
                     BoxInfo boxInfo = boxes.get(i);
+
                     cabinetEntry.addBox(boxInfo);
                 }
+
                 GetCabinetStatus task = new GetCabinetStatus(cabinetEntry);
                 task.valueProperty().addListener(new ChangeListener<Integer>() {
                     @Override
                     public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {
-                        if (newValue != 0) {
-                            return;
-                        }
+                        if (newValue != 0) return;
+
                         boolean hasOpened = false;
                         String openNos = "";
                         for (int i = 0; i < boxes.size(); i++) {
@@ -107,6 +115,7 @@ public class CommonDeliveryController extends RootController implements Initiali
                                 boxInfo.setOpened(true);
                                 saveBox(boxInfo);
                             }
+
                             if (!boxInfo.isLocked() && boxInfo.isOpened()) {
                                 hasOpened = true;
                                 openNos += "," + boxInfo.getSequence();
@@ -121,6 +130,7 @@ public class CommonDeliveryController extends RootController implements Initiali
                             smallButton.setDisable(true);
                             middleButton.setDisable(true);
                             largeButton.setDisable(true);
+
                         } else {
                             lblMessage.setVisible(false);
                             lblLine1.setVisible(false);
@@ -129,8 +139,11 @@ public class CommonDeliveryController extends RootController implements Initiali
                             largeButton.setDisable(false);
                         }
                     }
+
                 });
                 SimpleDialog.showDialog(app.getRootStage(), task, "", "");
+
+
             }
 
             @Override
@@ -138,6 +151,7 @@ public class CommonDeliveryController extends RootController implements Initiali
 
             }
         });
+
     }
 
     @FXML
@@ -146,6 +160,7 @@ public class CommonDeliveryController extends RootController implements Initiali
             box = smallBoxes.get(0);
         }
         goPutdown();
+
     }
 
     @FXML
@@ -154,6 +169,7 @@ public class CommonDeliveryController extends RootController implements Initiali
             box = middleBoxes.get(0);
         }
         goPutdown();
+
     }
 
     @FXML
@@ -162,6 +178,7 @@ public class CommonDeliveryController extends RootController implements Initiali
             box = largeBoxes.get(0);
         }
         goPutdown();
+
     }
 
     private void goPutdown() {
@@ -169,6 +186,7 @@ public class CommonDeliveryController extends RootController implements Initiali
             SimpleDialog.showMessageDialog(app.getRootStage(), "请选择空闲的箱门类别.", "");
             return;
         }
+
         SelectRoomController controller = app.goSelectRoom();
         controller.setBox(box);
     }
@@ -178,11 +196,14 @@ public class CommonDeliveryController extends RootController implements Initiali
         lblLine1.setText("");
         HBox.setHgrow(topLeft, Priority.ALWAYS);
         HBox.setHgrow(topRight, Priority.ALWAYS);
+
         UserInfo user = GlobalOption.currentUser;
+
         smallBoxes = new ArrayList<>();
         middleBoxes = new ArrayList<>();
         largeBoxes = new ArrayList<>();
         box = null;
+
     }
 
     private void listAvailableBox() {
@@ -193,9 +214,8 @@ public class CommonDeliveryController extends RootController implements Initiali
         BoxService.listAvailableBox(GlobalOption.currentCabinet.getCabinetId(), new RestfulResult() {
             @Override
             public void doResult(RfResultEvent event) {
-                if (event.getResult() != RfResultEvent.OK) {
-                    return;
-                }
+                if (event.getResult() != RfResultEvent.OK) return;
+
                 List<BoxInfo> boxes = (List<BoxInfo>) event.getData();
                 for (int i = 0; i < boxes.size(); i++) {
                     BoxInfo box = boxes.get(i);
@@ -213,6 +233,8 @@ public class CommonDeliveryController extends RootController implements Initiali
                 }
                 setButtonsText();
                 checkBoxStatus();
+
+
             }
 
             @Override
@@ -223,13 +245,13 @@ public class CommonDeliveryController extends RootController implements Initiali
     }
 
     private void setButtonsText() {
+
         setButtonText(smallButton, "小包箱", smallBoxes);
         setButtonText(middleButton, "中包箱", middleBoxes);
         setButtonText(largeButton, "大包箱", largeBoxes);
         int count = smallBoxes.size() + middleBoxes.size() + largeBoxes.size();
-        if (count > 0) {
-            return;
-        }
+        if (count > 0) return;
+
         String nodesTypes = BoxInfo.BOX_TYPE_SMALL + "," + BoxInfo.BOX_TYPE_MIDDLE + "," + BoxInfo.BOX_TYPE_LARGE;
         BoxService.getAnotherMaxAvailableCabinet(GlobalOption.currentCabinet.getCabinetId(), nodesTypes, new RestfulResult() {
             @Override
@@ -242,6 +264,7 @@ public class CommonDeliveryController extends RootController implements Initiali
                         String message = "本柜箱门已满," + event.getResult() + "号柜有" + event.getData().toString() + "个空箱,请到" + event.getResult() + "号柜投件.";
                         lblMessage.setText(message);
                         //SimpleDialog.showMessageDialog(app.getRootStage(), message, "");
+
                     }
                 }
             }
@@ -298,4 +321,6 @@ public class CommonDeliveryController extends RootController implements Initiali
             }
         });
     }
+
+
 }

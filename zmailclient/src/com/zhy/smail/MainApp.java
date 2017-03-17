@@ -308,6 +308,7 @@ public class MainApp extends Application {
             ManagerController controller = fxmlLoader.getController();
             getRootStage().getScene().setRoot(root);
             controller.setApp(this);
+
         } catch (Exception e) {
             SimpleDialog.showMessageDialog(getRootStage(), e.getMessage(), "错误");
         }
@@ -321,6 +322,7 @@ public class MainApp extends Application {
             getRootStage().getScene().setRoot(root);
             PickupController controller = fxmlLoader.getController();
             controller.setApp(this);
+
         } catch (Exception e) {
             SimpleDialog.showMessageDialog(this.getRootStage(), e.getMessage(), "错误");
         }
@@ -329,11 +331,11 @@ public class MainApp extends Application {
     public void goDelivery() {
         try {
             FXMLLoader fxmlLoader;
-            fxmlLoader = new FXMLLoader(getClass().getResource("delivery/view/commonDelivery.fxml"));
+            fxmlLoader = new FXMLLoader(getClass().getResource("delivery/view/Delivery.fxml"));
             Parent root = fxmlLoader.load();
             getRootStage().getScene().setRoot(root);
             // Modified By Luopeng Mar 15 2017
-            CommonDeliveryController controller = fxmlLoader.getController();
+            DeliveryController controller = fxmlLoader.getController();
             controller.setApp(this);
         } catch (Exception e) {
             SimpleDialog.showMessageDialog(this.getRootStage(), e.getMessage(), "错误");

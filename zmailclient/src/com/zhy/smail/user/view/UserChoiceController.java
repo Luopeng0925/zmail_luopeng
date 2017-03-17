@@ -75,6 +75,7 @@ public class UserChoiceController extends RootController implements Initializabl
     private TableColumn<UserInfo, String> tcCardNo9;
     @FXML
     private TableColumn<UserInfo, String> tcCardNo10;
+
     @FXML
     private TextField txtBuildingNo;
     @FXML
@@ -109,6 +110,7 @@ public class UserChoiceController extends RootController implements Initializabl
         onRefresh();
     }
 
+
     private void createOwnerTable() {
         tcBuildingNo.setCellValueFactory(new PropertyValueFactory("buildingNo"));
         tcUnitNo.setCellValueFactory(new PropertyValueFactory<UserInfo, String>("unitNo"));
@@ -126,14 +128,10 @@ public class UserChoiceController extends RootController implements Initializabl
                     @Override
                     public void doResult(RfResultEvent event) {
                         List<UserInfo> users = (List<UserInfo>) event.getData();
-                        if (users == null) {
-                            return;
-                        }
-                        String phone = "";
+                        if (users == null) return;
+
                         for (int i = 0; i < users.size(); i++) {
                             UserInfo user = users.get(i);
-                            phone = user.getPhoneNo().replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2");
-                            user.setPhoneNo(phone);
                             ownerList.add(user);
                         }
                     }
